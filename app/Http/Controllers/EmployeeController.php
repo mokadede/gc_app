@@ -10,7 +10,7 @@ class EmployeeController extends Controller
 {
     public function index()
     {
-        $employees = User::where('role', 'karyawan')
+        $employees = User::whereIn('role', ['owner', 'karyawan'])
             ->orderBy('created_at', 'desc')
             ->get();
         return response()->json($employees);
