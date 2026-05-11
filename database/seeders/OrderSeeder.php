@@ -15,7 +15,7 @@ class OrderSeeder extends Seeder
     public function run(): void
     {
         $services = Service::all();
-        $admin = User::where('role', 'admin')->first();
+        $admin = User::whereIn('role', ['owner', 'karyawan'])->first();
         if ($services->isEmpty()) return;
 
         $statuses = ['pending', 'picked_up', 'in_process', 'done', 'delivered'];
