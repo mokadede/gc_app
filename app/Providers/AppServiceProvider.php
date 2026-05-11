@@ -16,7 +16,8 @@ class AppServiceProvider extends ServiceProvider
     {
         // Owner only (admin role)
         Gate::define('owner-only', function ($user) {
-            return $user->role === 'admin';
+            $role = strtolower($user->role ?? '');
+            return $role === 'admin' || $role === 'owner' || $role === 'superadmin';
         });
     }
 }
