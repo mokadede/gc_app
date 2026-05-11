@@ -13,21 +13,23 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Create Admin User
+        // 1. Create Owner User
         User::factory()->create([
-            'name' => 'Admin Gift Clean',
+            'name' => 'Owner Gift Clean',
+            'username' => 'owner',
             'phone' => '081111111111',
-            'email' => 'admin@giftclean.com',
-            'role' => 'admin',
+            'email' => 'owner@giftclean.com',
+            'role' => 'owner',
             'password' => Hash::make('admin123'),
         ]);
 
-        // 2. Create Kasir User
+        // 2. Create Karyawan User
         User::factory()->create([
-            'name' => 'Kasir Gift Clean',
+            'name' => 'Karyawan Gift Clean',
+            'username' => 'staff',
             'phone' => '082222222222',
-            'email' => 'kasir@giftclean.com',
-            'role' => 'kasir',
+            'email' => 'karyawan@giftclean.com',
+            'role' => 'karyawan',
             'password' => Hash::make('kasir123'),
         ]);
 

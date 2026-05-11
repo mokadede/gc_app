@@ -30,7 +30,9 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request)
     {
-        $user = User::where('phone', $request->phone)->first();
+        $user = User::where('username', $request->username)
+            ->orWhere('phone', $request->username) // Fallback: bisa login pakai HP juga
+            ->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([

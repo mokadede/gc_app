@@ -15,9 +15,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Owner only (admin role)
-        Gate::define('owner-only', function ($user) {
-            $role = strtolower($user->role ?? '');
-            return $role === 'admin' || $role === 'owner' || $role === 'superadmin';
+        Gate::define('owner-only', function (User $user) {
+            return strtolower($user->role) === 'owner';
         });
     }
 }
