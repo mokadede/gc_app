@@ -40,6 +40,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('/vouchers', VoucherController::class)->middleware('can:owner-only');
 
     // Reports
-    Route::get('/reports/daily', [ReportController::class, 'daily'])->middleware('can:owner-only');
-    Route::get('/reports/monthly', [ReportController::class, 'monthly'])->middleware('can:owner-only');
+    Route::get('/reports/daily', [ReportController::class, 'daily']);
+    Route::get('/reports/monthly', [ReportController::class, 'monthly']);
 });
