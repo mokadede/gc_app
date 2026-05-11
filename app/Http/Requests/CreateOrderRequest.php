@@ -14,8 +14,11 @@ class CreateOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'customer_name' => 'required|string|max:150',
+            'customer_phone' => 'nullable|string|max:20',
             'pickup_address' => 'nullable|string',
             'notes' => 'nullable|string',
+            'voucher_id' => 'nullable|exists:vouchers,id',
             'items' => 'required|array|min:1',
             'items.*.service_id' => 'required|exists:services,id',
             'items.*.quantity' => 'required|numeric|min:0.1',

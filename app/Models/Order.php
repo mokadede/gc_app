@@ -10,16 +10,10 @@ class Order extends Model
     use HasFactory;
 
     protected $fillable = [
-        'order_code',
-        'user_id',
-        'pickup_address',
-        'notes',
-        'status',
-        'pickup_time',
-        'estimated_done',
-        'total_price',
-        'is_paid',
-        'payment_method',
+        'order_code', 'created_by', 'customer_name', 'customer_phone',
+        'pickup_address', 'notes', 'status', 'pickup_time', 'estimated_done',
+        'total_price', 'is_paid', 'payment_method',
+        'voucher_id', 'discount_amount',
     ];
 
     protected $casts = [
@@ -28,9 +22,9 @@ class Order extends Model
         'estimated_done' => 'date',
     ];
 
-    public function user()
+    public function createdBy()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function items()
@@ -41,5 +35,10 @@ class Order extends Model
     public function statusLogs()
     {
         return $this->hasMany(OrderStatusLog::class);
+    }
+
+    public function voucher()
+    {
+        return $this->belongsTo(Voucher::class);
     }
 }

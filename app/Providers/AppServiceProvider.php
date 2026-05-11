@@ -7,26 +7,16 @@ use Illuminate\Support\Facades\Gate;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
-        // Authorization Gates for admin/kasir
-        Gate::define('manage-services', function ($user) {
-            return in_array($user->role, ['admin', 'kasir']);
-        });
-
-        Gate::define('view-reports', function ($user) {
-            return in_array($user->role, ['admin', 'kasir']);
+        // Owner only (admin role)
+        Gate::define('owner-only', function ($user) {
+            return $user->role === 'admin';
         });
     }
 }
