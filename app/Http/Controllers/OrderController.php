@@ -83,10 +83,10 @@ class OrderController extends Controller
 
             $estimatedDone = null;
             if ($maxDurationDays > 0) {
-                // If 1 day or more
-                $estimatedDone = Carbon::now()->addDays($maxDurationDays)->endOfDay();
+                // 1 day = 24 hours, 2 days = 48 hours, etc.
+                $estimatedDone = Carbon::now()->addHours(24 * $maxDurationDays);
             } elseif ($hasSameDay) {
-                // If only same day services
+                // Same Day = 8 hours
                 $estimatedDone = Carbon::now()->addHours(8);
             }
 
