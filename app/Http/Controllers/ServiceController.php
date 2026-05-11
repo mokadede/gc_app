@@ -21,21 +21,8 @@ class ServiceController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'category_id' => 'required|exists:service_categories,id',
-            'name' => 'required|string|max:150',
-            'unit' => 'required|in:kg,pcs',
-            'duration_days' => 'nullable|integer',
-            'duration_label' => 'nullable|string|max:50',
-            'difficulty' => 'nullable|in:normal,hard,sexy',
-            'size' => 'nullable|in:S,M,L,XL',
-            'price_min' => 'required|integer',
-            'price_max' => 'nullable|integer',
-            'is_active' => 'boolean',
-        ]);
-
-        $service = Service::create($validated);
-        return response()->json($service, 201);
+        // TES RADIKAL: Langsung kembalikan sukses
+        return response()->json(['message' => 'Berhasil lewat controller'], 201);
     }
 
     public function update(Request $request, Service $service)
