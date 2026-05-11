@@ -55,6 +55,8 @@ class OrderController extends Controller
                 }
             }
 
+            $status = $request->status ?? 'pending';
+
             $order = Order::create([
                 'order_code' => $orderCode,
                 'created_by' => $request->user()->id,
@@ -62,7 +64,7 @@ class OrderController extends Controller
                 'customer_phone' => $request->customer_phone,
                 'pickup_address' => $request->pickup_address,
                 'notes' => $request->notes,
-                'status' => 'pending',
+                'status' => $status,
                 'total_price' => $totalPrice - $discountAmount,
                 'voucher_id' => $request->voucher_id,
                 'discount_amount' => $discountAmount,
@@ -81,7 +83,7 @@ class OrderController extends Controller
 
             OrderStatusLog::create([
                 'order_id' => $order->id,
-                'status' => 'pending',
+                'status' => $status,
                 'changed_by' => $request->user()->id,
             ]);
 

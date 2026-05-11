@@ -17,6 +17,7 @@ class CreateOrderRequest extends FormRequest
             'customer_name' => 'required|string|max:150',
             'customer_phone' => 'nullable|string|max:20',
             'pickup_address' => 'nullable|string',
+            'status' => 'nullable|string|in:pending,picked_up',
             'notes' => 'nullable|string',
             'voucher_id' => 'nullable|exists:vouchers,id',
             'items' => 'required|array|min:1',
