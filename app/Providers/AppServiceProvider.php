@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Gate;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +20,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Authorization Gates for admin/kasir
+        Gate::define('manage-services', function ($user) {
+            return in_array($user->role, ['admin', 'kasir']);
+        });
+
+        Gate::define('view-reports', function ($user) {
+            return in_array($user->role, ['admin', 'kasir']);
+        });
     }
 }
