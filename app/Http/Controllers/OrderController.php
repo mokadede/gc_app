@@ -7,8 +7,10 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\OrderStatusLog;
 use App\Models\Voucher;
+use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class OrderController extends Controller
 {
@@ -61,6 +63,24 @@ class OrderController extends Controller
                 }
             }
 
+            // Calculate estimated_done based on services
+            $maxDurationDays = 0;
+            $hasSameDay = false;
+            foreach ($request->items as $item) {
+                $service = Service::find($item['service_id']);
+                if ($service) {
+                    if ($service->duration_days == 0) $hasSameDay = true;
+                    $maxDurationDays = max($maxDurationDays, $service->duration_days);
+                }
+            }
+
+            $estimatedDone = null;
+            if ($maxDurationDays > 0) {
+                $estimatedDone = Carbon::now()->addDays($maxDurationDays)->endOfDay();
+            } elseif ($hasSameDay) {
+                $estimatedDone = Carbon::now()->addHours(8); // Same Day = 8 Hours
+            }
+
             $status = $request->status ?? 'pending';
 
             $order = Order::create([
@@ -74,6 +94,7 @@ class OrderController extends Controller
                 'total_price' => $totalPrice - $discountAmount,
                 'voucher_id' => $voucherId,
                 'discount_amount' => $discountAmount,
+                'estimated_done' => $estimatedDone,
             ]);
 
             foreach ($request->items as $item) {

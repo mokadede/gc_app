@@ -19,7 +19,7 @@ class Order extends Model
     protected $casts = [
         'is_paid' => 'boolean',
         'pickup_time' => 'datetime',
-        'estimated_done' => 'date',
+        'estimated_done' => 'datetime',
     ];
 
     public function createdBy()
