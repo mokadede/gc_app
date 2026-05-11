@@ -62,4 +62,28 @@ class VoucherController extends Controller
         $voucher->delete();
         return response()->json(['message' => 'Voucher deleted']);
     }
+
+    public function check(Request $request)
+    {
+        $code = $request->query('code');
+        $voucher = Voucher::where('code', $code)
+            ->where('is_active', true)
+            ->where(function($q) {
+                $q->whereNull('valid_from')->orWhere('valid_from', '<=', now());
+            })
+            ->where(function($q) {
+                $q->whereNull('valid_until')->orWhere('valid_until', '>=', now());
+            })
+            ->first();
+
+        if (!$voucher) {
+            return response()->json(['message' => 'Voucher tidak valid atau sudah kadaluarsa'], 404);
+        }
+
+        if ($voucher->usage_limit && $voucher->used_count >= $voucher->usage_limit) {
+            return response()->json(['message' => 'Kuota voucher sudah habis'], 400);
+        }
+
+        return response()->json($voucher);
+    }
 }

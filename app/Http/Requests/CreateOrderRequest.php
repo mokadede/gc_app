@@ -20,6 +20,7 @@ class CreateOrderRequest extends FormRequest
             'status' => 'nullable|string|in:pending,picked_up',
             'notes' => 'nullable|string',
             'voucher_id' => 'nullable|exists:vouchers,id',
+            'voucher_code' => 'nullable|string|exists:vouchers,code',
             'items' => 'required|array|min:1',
             'items.*.service_id' => 'required|exists:services,id',
             'items.*.quantity' => 'required|numeric|min:0.1',

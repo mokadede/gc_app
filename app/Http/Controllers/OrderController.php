@@ -40,8 +40,14 @@ class OrderController extends Controller
             $discountAmount = 0;
 
             // Apply voucher if provided
-            if ($request->voucher_id) {
-                $voucher = Voucher::find($request->voucher_id);
+            $voucherId = $request->voucher_id;
+            if ($request->voucher_code) {
+                $v = Voucher::where('code', $request->voucher_code)->first();
+                if ($v) $voucherId = $v->id;
+            }
+
+            if ($voucherId) {
+                $voucher = Voucher::find($voucherId);
                 if ($voucher && $voucher->isValid()) {
                     if ($voucher->type === 'percentage') {
                         $discountAmount = (int) ($totalPrice * $voucher->value / 100);
@@ -66,7 +72,7 @@ class OrderController extends Controller
                 'notes' => $request->notes,
                 'status' => $status,
                 'total_price' => $totalPrice - $discountAmount,
-                'voucher_id' => $request->voucher_id,
+                'voucher_id' => $voucherId,
                 'discount_amount' => $discountAmount,
             ]);
 

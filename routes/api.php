@@ -41,6 +41,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('/employees', EmployeeController::class)->middleware('can:owner-only');
 
     // Vouchers (Buka akses untuk sementara demi testing)
+    Route::get('/vouchers/check', [VoucherController::class, 'check']);
     Route::apiResource('/vouchers', VoucherController::class);
 
     // Reports

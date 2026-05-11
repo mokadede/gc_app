@@ -10,7 +10,7 @@ class EmployeeController extends Controller
 {
     public function index()
     {
-        $employees = User::whereIn('role', ['admin', 'kasir'])
+        $employees = User::where('role', 'karyawan')
             ->orderBy('created_at', 'desc')
             ->get();
         return response()->json($employees);
@@ -20,13 +20,15 @@ class EmployeeController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:150',
+            'username' => 'required|string|max:50|unique:users,username',
             'phone' => 'required|string|max:20|unique:users,phone',
             'email' => 'nullable|email|max:150|unique:users,email',
             'password' => 'required|string|min:6',
-            'role' => 'required|in:admin,kasir',
+            'role' => 'nullable|string',
             'address' => 'nullable|string',
         ]);
 
+        $validated['role'] = 'karyawan';
         $validated['password'] = Hash::make($validated['password']);
         $user = User::create($validated);
 
@@ -42,10 +44,10 @@ class EmployeeController extends Controller
     {
         $validated = $request->validate([
             'name' => 'string|max:150',
+            'username' => 'string|max:50|unique:users,username,' . $employee->id,
             'phone' => 'string|max:20|unique:users,phone,' . $employee->id,
             'email' => 'nullable|email|max:150|unique:users,email,' . $employee->id,
             'password' => 'nullable|string|min:6',
-            'role' => 'in:admin,kasir',
             'address' => 'nullable|string',
             'is_active' => 'boolean',
         ]);
