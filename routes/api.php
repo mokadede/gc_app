@@ -6,6 +6,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\ReportController;
 
 Route::post('/auth/login', [AuthController::class, 'login']);
@@ -43,6 +44,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Vouchers (Buka akses untuk sementara demi testing)
     Route::get('/vouchers/check', [VoucherController::class, 'check']);
     Route::apiResource('/vouchers', VoucherController::class);
+
+    // Expenses
+    Route::apiResource('/expenses', ExpenseController::class);
 
     // Reports
     Route::get('/reports/daily', [ReportController::class, 'daily']);
