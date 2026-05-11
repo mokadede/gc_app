@@ -40,8 +40,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Employees
     Route::apiResource('/employees', EmployeeController::class)->middleware('can:owner-only');
 
-    // Vouchers
-    Route::apiResource('/vouchers', VoucherController::class)->middleware('can:owner-only');
+    // Vouchers (Buka akses untuk sementara demi testing)
+    Route::apiResource('/vouchers', VoucherController::class);
 
     // Reports
     Route::get('/reports/daily', [ReportController::class, 'daily']);
