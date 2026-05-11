@@ -66,19 +66,28 @@ class OrderController extends Controller
             // Calculate estimated_done based on services
             $maxDurationDays = 0;
             $hasSameDay = false;
+            
             foreach ($request->items as $item) {
                 $service = Service::find($item['service_id']);
                 if ($service) {
-                    if ($service->duration_days == 0) $hasSameDay = true;
-                    $maxDurationDays = max($maxDurationDays, $service->duration_days);
+                    $duration = (int) $service->duration_days;
+                    if ($duration === 0) {
+                        $hasSameDay = true;
+                    } else {
+                        if ($duration > $maxDurationDays) {
+                            $maxDurationDays = $duration;
+                        }
+                    }
                 }
             }
 
             $estimatedDone = null;
             if ($maxDurationDays > 0) {
+                // If 1 day or more
                 $estimatedDone = Carbon::now()->addDays($maxDurationDays)->endOfDay();
             } elseif ($hasSameDay) {
-                $estimatedDone = Carbon::now()->addHours(8); // Same Day = 8 Hours
+                // If only same day services
+                $estimatedDone = Carbon::now()->addHours(8);
             }
 
             $status = $request->status ?? 'pending';
@@ -91,7 +100,7 @@ class OrderController extends Controller
                 'pickup_address' => $request->pickup_address,
                 'notes' => $request->notes,
                 'status' => $status,
-                'total_price' => $totalPrice - $discountAmount,
+                'total_price' => (int) ($totalPrice - $discountAmount),
                 'voucher_id' => $voucherId,
                 'discount_amount' => $discountAmount,
                 'estimated_done' => $estimatedDone,
