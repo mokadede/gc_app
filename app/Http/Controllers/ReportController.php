@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Expense;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -33,39 +34,41 @@ class ReportController extends Controller
 
         // 1. Query Dasar untuk Ringkasan
         $query = Order::whereYear('created_at', $year);
+        $expenseQuery = Expense::whereYear('expense_date', $year);
+
         if ($month && $month != 'null') {
             $query->whereMonth('created_at', $month);
+            $expenseQuery->whereMonth('expense_date', $month);
         }
 
         $orders = $query->get();
+        $expenses = $expenseQuery->get();
         
         // Pastikan is_paid dihitung dengan benar (1 atau true)
         $paidOrders = $orders->filter(fn($o) => $o->is_paid == 1 || $o->is_paid == true);
 
-        // 2. Data Chart (Selalu 12 bulan untuk tahun yang dipilih)
-        $monthlyChart = Order::whereYear('created_at', $year)
+        // 2. Data Chart (Revenue vs Expense)
+        $monthlyRevenue = Order::whereYear('created_at', $year)
             ->where(function($q) {
                 $q->where('is_paid', 1)->orWhere('is_paid', true);
             })
-            ->select(
-                DB::raw('MONTH(created_at) as month'),
-                DB::raw('SUM(total_price) as revenue'),
-                DB::raw('COUNT(*) as count')
-            )
-            ->groupBy(DB::raw('MONTH(created_at)'))
-            ->get()
-            ->keyBy('month');
+            ->select(DB::raw('MONTH(created_at) as month'), DB::raw('SUM(total_price) as revenue'))
+            ->groupBy('month')->get()->keyBy('month');
+
+        $monthlyExpenses = Expense::whereYear('expense_date', $year)
+            ->select(DB::raw('MONTH(expense_date) as month'), DB::raw('SUM(amount) as amount'))
+            ->groupBy('month')->get()->keyBy('month');
 
         $chartData = [];
         for ($m = 1; $m <= 12; $m++) {
             $chartData[] = [
                 'month' => $m,
-                'revenue' => isset($monthlyChart[$m]) ? (int) $monthlyChart[$m]->revenue : 0,
-                'count' => isset($monthlyChart[$m]) ? (int) $monthlyChart[$m]->count : 0,
+                'revenue' => isset($monthlyRevenue[$m]) ? (int) $monthlyRevenue[$m]->revenue : 0,
+                'expense' => isset($monthlyExpenses[$m]) ? (int) $monthlyExpenses[$m]->amount : 0,
             ];
         }
 
-        // 3. Layanan Terlaris
+        // 3. Layanan Terlaris (sama)
         $topServicesQuery = OrderItem::join('orders', 'order_items.order_id', '=', 'orders.id')
             ->join('services', 'order_items.service_id', '=', 'services.id')
             ->whereYear('orders.created_at', $year);
@@ -98,7 +101,16 @@ class ReportController extends Controller
             ];
         });
 
-        // 4. Rincian Transaksi Lunas
+        // 4. Rangkuman Kategori Pengeluaran
+        $expenseSummary = $expenses->groupBy('category')->map(function ($items, $cat) {
+            return [
+                'category' => $cat,
+                'label' => Expense::categoryLabels()[$cat] ?? $cat,
+                'total' => (int) $items->sum('amount'),
+            ];
+        })->values();
+
+        // 5. Rincian Transaksi Lunas
         $paidTransactions = $orders->filter(fn($o) => $o->is_paid == 1 || $o->is_paid == true)
             ->values()
             ->map(function($o) {
@@ -114,12 +126,14 @@ class ReportController extends Controller
         return response()->json([
             'total_orders' => $orders->count(),
             'total_revenue' => (int) $paidOrders->sum('total_price'),
+            'total_expense' => (int) $expenses->sum('amount'),
             'paid_count' => $paidOrders->count(),
             'unpaid_count' => $orders->count() - $paidOrders->count(),
             'average_order_value' => $paidOrders->count() > 0 ? (int) ($paidOrders->sum('total_price') / $paidOrders->count()) : 0,
             'best_service' => $topServicesFormatted->first()['service_name'] ?? '-',
             'monthly_chart' => $chartData,
             'top_services' => $topServicesFormatted,
+            'expense_summary' => $expenseSummary,
             'paid_transactions' => $paidTransactions,
         ]);
     }
