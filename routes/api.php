@@ -10,6 +10,11 @@ use App\Http\Controllers\ReportController;
 
 Route::post('/auth/login', [AuthController::class, 'login']);
 
+// TES: Endpoint publik tanpa auth — untuk verifikasi server membaca file terbaru
+Route::get('/test-server', function () {
+    return response()->json(['status' => 'OK', 'message' => 'Server file terbaru aktif', 'time' => now()->toDateTimeString()]);
+});
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/auth/profile', [AuthController::class, 'profile']);
