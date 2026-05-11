@@ -27,11 +27,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/orders/{order}/payment', [OrderController::class, 'updatePayment']);
     Route::delete('/orders/{order}', [OrderController::class, 'destroy']);
 
-    // === Owner Only ===
-    // Services CRUD
-    Route::post('/services', [ServiceController::class, 'store'])->middleware('can:owner-only');
-    Route::put('/services/{service}', [ServiceController::class, 'update'])->middleware('can:owner-only');
-    Route::delete('/services/{service}', [ServiceController::class, 'destroy'])->middleware('can:owner-only');
+    // Services CRUD (Bisa diakses Admin/Kasir)
+    Route::post('/services', [ServiceController::class, 'store']);
+    Route::put('/services/{service}', [ServiceController::class, 'update']);
+    Route::delete('/services/{service}', [ServiceController::class, 'destroy']);
 
     // Employees
     Route::apiResource('/employees', EmployeeController::class)->middleware('can:owner-only');
