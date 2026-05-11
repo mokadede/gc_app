@@ -49,6 +49,7 @@ class ExpenseController extends Controller
         $validated = $request->validate([
             'category' => 'required|string|in:deterjen,pewangi,plastik,listrik_air,gaji,sewa,transportasi,lainnya',
             'description' => 'nullable|string|max:255',
+            'used_by' => 'nullable|string|max:100',
             'amount' => 'required|integer|min:1',
             'expense_date' => 'required|date',
         ]);
@@ -69,6 +70,7 @@ class ExpenseController extends Controller
         $validated = $request->validate([
             'category' => 'string|in:deterjen,pewangi,plastik,listrik_air,gaji,sewa,transportasi,lainnya',
             'description' => 'nullable|string|max:255',
+            'used_by' => 'nullable|string|max:100',
             'amount' => 'integer|min:1',
             'expense_date' => 'date',
         ]);
