@@ -15,35 +15,35 @@ class OrderSeeder extends Seeder
     {
         $services = Service::all();
         $admin = User::where('role', 'admin')->first();
-
         if ($services->isEmpty()) return;
 
-        // Buat 50 order dummy dalam 3 bulan terakhir
-        for ($i = 0; $i < 50; $i++) {
+        $statuses = ['pending', 'picked_up', 'in_process', 'done', 'delivered'];
+
+        // Buat 60 order dummy
+        for ($i = 0; $i < 60; $i++) {
             $date = Carbon::now()->subDays(rand(0, 90));
-            $isPaid = rand(0, 10) > 2; // 80% lunas
+            $status = $statuses[rand(0, 4)];
+            $isPaid = ($status === 'delivered' || $status === 'done') ? true : (rand(0, 1) == 1);
             
             $order = Order::create([
                 'order_code' => 'GC' . strtoupper(bin2hex(random_bytes(3))),
                 'created_by' => $admin->id,
-                'customer_name' => ['Budi', 'Siti', 'Agus', 'Dewi', 'Iwan', 'Lani'][rand(0, 5)],
+                'customer_name' => ['Budi', 'Siti', 'Agus', 'Dewi', 'Iwan', 'Lani', 'Andi', 'Rina'][rand(0, 7)],
                 'customer_phone' => '0812' . rand(10000000, 99999999),
-                'status' => $isPaid ? 'delivered' : 'pending',
+                'status' => $status,
                 'is_paid' => $isPaid,
                 'payment_method' => 'cash',
-                'total_price' => 0, // Akan diupdate setelah item
+                'total_price' => 0,
                 'created_at' => $date,
                 'updated_at' => $date,
             ]);
 
-            // Tambah 1-3 item per order
             $total = 0;
-            $itemCount = rand(1, 3);
+            $itemCount = rand(1, 2);
             for ($j = 0; $j < $itemCount; $j++) {
                 $service = $services->random();
-                $qty = rand(1, 5);
+                $qty = rand(1, 3);
                 $subtotal = $service->price_min * $qty;
-                
                 OrderItem::create([
                     'order_id' => $order->id,
                     'service_id' => $service->id,
@@ -53,7 +53,6 @@ class OrderSeeder extends Seeder
                 ]);
                 $total += $subtotal;
             }
-
             $order->update(['total_price' => $total]);
         }
     }
