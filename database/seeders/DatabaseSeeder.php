@@ -38,5 +38,8 @@ class DatabaseSeeder extends Seeder
 
         // 4. Seed Services (37 layanan dari PRD)
         $this->call(ServiceSeeder::class);
+
+        // 5. Seed Orders (50 order dummy)
+        $this->call(OrderSeeder::class);
     }
 }
