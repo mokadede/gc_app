@@ -81,13 +81,18 @@ class OrderController extends Controller
                 }
             }
 
+            $now = Carbon::now();
             $estimatedDone = null;
+
             if ($maxDurationDays > 0) {
-                // 1 day = 24 hours, 2 days = 48 hours, etc.
-                $estimatedDone = Carbon::now()->addHours(24 * $maxDurationDays);
+                // Fixed duration: 24 hours per day from now
+                $estimatedDone = $now->copy()->addHours(24 * $maxDurationDays);
             } elseif ($hasSameDay) {
-                // Same Day = 8 hours
-                $estimatedDone = Carbon::now()->addHours(8);
+                // Fixed duration: Exactly 8 hours from now
+                $estimatedDone = $now->copy()->addHours(8);
+            } else {
+                // Default for Satuan/Others if not specified (e.g., 2 days)
+                $estimatedDone = $now->copy()->addDays(2);
             }
 
             $status = $request->status ?? 'pending';
