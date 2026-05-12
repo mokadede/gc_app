@@ -16,7 +16,7 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
-        $orders = Order::with(['items.service', 'statusLogs', 'voucher'])
+        $orders = Order::with(['items.service', 'statusLogs', 'voucher', 'creator'])
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -25,7 +25,7 @@ class OrderController extends Controller
 
     public function show(Request $request, Order $order)
     {
-        return response()->json($order->load(['items.service', 'statusLogs', 'voucher']));
+        return response()->json($order->load(['items.service', 'statusLogs', 'voucher', 'creator']));
     }
 
     public function store(CreateOrderRequest $request)

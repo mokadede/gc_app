@@ -22,7 +22,7 @@ class Order extends Model
         'estimated_done' => 'datetime',
     ];
 
-    public function createdBy()
+    public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
     }
