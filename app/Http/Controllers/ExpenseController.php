@@ -67,6 +67,10 @@ class ExpenseController extends Controller
 
     public function update(Request $request, Expense $expense)
     {
+        if (!$request->user()->isOwner()) {
+            return response()->json(['message' => 'Hanya Owner yang dapat mengubah data pengeluaran.'], 403);
+        }
+
         $validated = $request->validate([
             'category' => 'string|in:deterjen,pewangi,plastik,listrik_air,gaji,sewa,transportasi,lainnya',
             'description' => 'nullable|string|max:255',
@@ -79,8 +83,12 @@ class ExpenseController extends Controller
         return response()->json($expense->load('creator'));
     }
 
-    public function destroy(Expense $expense)
+    public function destroy(Request $request, Expense $expense)
     {
+        if (!$request->user()->isOwner()) {
+            return response()->json(['message' => 'Hanya Owner yang dapat menghapus data pengeluaran.'], 403);
+        }
+
         $expense->delete();
         return response()->json(['message' => 'Expense deleted']);
     }

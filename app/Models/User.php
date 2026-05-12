@@ -50,4 +50,14 @@ class User extends Authenticatable
             'is_active' => 'boolean',
         ];
     }
+
+    public function isOwner()
+    {
+        return $this->role === 'owner';
+    }
+
+    public function isKaryawan()
+    {
+        return $this->role === 'karyawan';
+    }
 }
